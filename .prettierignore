@@ -1,0 +1,11 @@
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+node_modules
+dist
+/dist
+*/dist
+dist/*
+logs
+logs/*
