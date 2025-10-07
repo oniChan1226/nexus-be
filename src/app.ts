@@ -1,38 +1,49 @@
-import express, { Application, Request, Response, NextFunction } from "express"
-import cors from "cors"
-import morgan from "morgan"
-import cookieParser from "cookie-parser"
-import { config } from "./config/env"
-import routes from "./routes"
-import logger from "./config/logger"
-import { ErrorMiddleware } from "./middlewares/errorHandler"
-import { ApiResponse } from "./utils/ApiResponse"
+import express, { Application, Request, Response, NextFunction } from "express";
+import cors from "cors";
+import morgan from "morgan";
+import cookieParser from "cookie-parser";
+import { config } from "./config/env";
+import routes from "./routes";
+import logger from "./config/logger";
+import { ErrorMiddleware } from "./middlewares/errorHandler";
+import { ApiResponse } from "./utils/ApiResponse";
 
-const app: Application = express()
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        role: string;
+      };
+    }
+  }
+}
+
+const app: Application = express();
 
 // Middlewares
-app.use(cors())
+app.use(cors());
 app.use(
   express.json({
     limit: "1MB",
   })
-)
-app.use(cookieParser())
+);
+app.use(cookieParser());
 
 // Morgan + Winston logging
 const stream = {
   write: (message: string) => logger.info(message.trim()),
-}
-app.use(morgan("combined", { stream }))
+};
+app.use(morgan("combined", { stream }));
 
 // Root route
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
     status: "OK",
-    message: "They see me rolling, they hating...",
+    message: "Mery Karan Arjun",
     environment: config.MAIN.nodeEnv,
-  })
-})
+  });
+});
 
 // Health check
 app.get("/health", (req: Request, res: Response) => {
@@ -54,18 +65,18 @@ app.get("/health", (req: Request, res: Response) => {
     },
     pid: process.pid,
     version: process.env.npm_package_version || "unknown",
-  })
-})
+  });
+});
 
 // API routes
-app.use(config.API.prefix, routes)
+app.use(config.API.prefix, routes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
-  res.status(404).json(new ApiResponse<null>(404, "Route not found"))
-})
+  res.status(404).json(new ApiResponse<null>(404, "Route not found"));
+});
 
 // Global error handler
-app.use(ErrorMiddleware)
+app.use(ErrorMiddleware);
 
-export default app
+export default app;

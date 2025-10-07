@@ -1,9 +1,13 @@
+// config/index.ts
 import dotenv from "dotenv";
+import { AppConfig } from "../@types/config";
+import type { SignOptions } from "jsonwebtoken";
+
 dotenv.config();
 
-export const config = {
+export const config: AppConfig = {
   MAIN: {
-    port: process.env.PORT || 5000,
+    port: Number(process.env.PORT) || 5000,
     nodeEnv: process.env.NODE_ENV || "development",
     mongoUri: process.env.MONGO_URI || "",
     dbName: process.env.DB_NAME,
@@ -12,7 +16,15 @@ export const config = {
     prefix: "/api",
   },
   JWT: {
-    secret: process.env.JWT_SECRET || "your_jwt_secret",
-    expiresIn: process.env.JWT_EXPIRES_IN || "1h",
+    accessToken: {
+      secret: process.env.ACCESS_TOKEN_SECRET || "default_access_secret",
+      expiresIn:
+        (process.env.ACCESS_TOKEN_EXPIRY as SignOptions["expiresIn"]) || "15m",
+    },
+    refreshToken: {
+      secret: process.env.REFRESH_TOKEN_SECRET || "default_refresh_secret",
+      expiresIn:
+        (process.env.REFRESH_TOKEN_EXPIRY as SignOptions["expiresIn"]) || "7d",
+    },
   },
 };
