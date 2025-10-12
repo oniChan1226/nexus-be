@@ -1,5 +1,6 @@
-import { HydratedDocument, Model, ObjectId, Types } from "mongoose";
-import { BaseDocument } from "./common";
+import { HydratedDocument, Model } from "mongoose";
+import { BaseDocument, Ref } from "./common";
+import { IRole } from "./role.type";
 
 export interface IUser extends BaseDocument {
   name: string;
@@ -8,7 +9,7 @@ export interface IUser extends BaseDocument {
   age?: number;
   profileImage?: string;
   // Role
-  role: [ObjectId];
+  role: Ref<IRole>[];
   // security
   refreshToken?: string;
   isVerified?: boolean;

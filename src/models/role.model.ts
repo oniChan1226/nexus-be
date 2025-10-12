@@ -14,7 +14,7 @@ const rolesSchema = new mongoose.Schema<IRole>(
     permissions: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Permissions",
+        ref: "Permission",
       },
     ],
   },
@@ -22,6 +22,6 @@ const rolesSchema = new mongoose.Schema<IRole>(
 );
 
 export const RoleModel = mongoose.model<IRole, RoleModelType>(
-  "Roles",
+  "Role",
   rolesSchema
 );

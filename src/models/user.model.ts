@@ -7,6 +7,8 @@ import {
 } from "../@types/models/user.types";
 import bcrypt from "bcrypt";
 import { config } from "../config/env";
+import { RoleModel } from "./role.model";
+import { UserRoleEnum } from "../@types/enum";
 
 const userSchema = new mongoose.Schema<IUser>(
   {
@@ -35,7 +37,7 @@ const userSchema = new mongoose.Schema<IUser>(
     role: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Roles",
+        ref: "Role",
       },
     ],
     // Security
@@ -43,7 +45,8 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
     },
     isVerified: {
-      type: String,
+      type: Boolean,
+      default: false,
     },
     // audits
     lastLoginAt: {
@@ -82,6 +85,17 @@ userSchema.pre<UserDocument>("save", async function (next) {
   const salt = await bcrypt.genSalt(10);
   if (this.password) {
     this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
+userSchema.pre<UserDocument>("save", async function (next) {
+  if (!this.role || this.role.length === 0) {
+    const defaultRole = await RoleModel.findOne({
+      name: UserRoleEnum.USER,
+    }).select("_id");
+    if (!defaultRole) next();
+    if (defaultRole) this.role = [defaultRole._id];
   }
   next();
 });
