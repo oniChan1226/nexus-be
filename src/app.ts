@@ -7,14 +7,12 @@ import routes from "./routes";
 import logger from "./config/logger";
 import { ErrorMiddleware } from "./middlewares/errorHandler";
 import { ApiResponse } from "./utils/ApiResponse";
+import { IUser } from "./@types/models/user.types";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: {
-        id: string;
-        role: string;
-      };
+      user?: IUser;
     }
   }
 }

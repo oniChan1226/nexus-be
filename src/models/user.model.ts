@@ -1,22 +1,14 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import { SocialPlatform, User, UserDocument, UserModelType } from "../@types/user.types";
+import {
+  IUser,
+  UserDocument,
+  UserModelType,
+} from "../@types/models/user.types";
 import bcrypt from "bcrypt";
 import { config } from "../config/env";
 
-const socialPlatformSchema = new mongoose.Schema<SocialPlatform>(
-  {
-    name: { type: String },
-    accessToken: { type: String },
-    image: { type: String },
-    profileUrl: { type: String },
-  },
-  {
-    _id: false,
-  }
-);
-
-const userSchema = new mongoose.Schema<User>(
+const userSchema = new mongoose.Schema<IUser>(
   {
     name: {
       type: String,
@@ -39,10 +31,20 @@ const userSchema = new mongoose.Schema<User>(
     profileImage: {
       type: String,
     },
+    // Access
+    role: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Roles",
+      },
+    ],
+    // Security
     refreshToken: {
       type: String,
     },
-    socialPlatforms: [socialPlatformSchema],
+    isVerified: {
+      type: String,
+    },
     // audits
     lastLoginAt: {
       type: Date,
@@ -52,40 +54,62 @@ const userSchema = new mongoose.Schema<User>(
   {
     timestamps: true,
     collection: "users",
+    toJSON: {
+      transform(_doc, ret) {
+        delete ret.password;
+        delete ret.refreshToken;
+        return ret;
+      },
+    },
+    toObject: {
+      transform(_doc, ret) {
+        delete ret.password;
+        delete ret.refreshToken;
+        return ret;
+      },
+    },
   }
 );
 
 // ✅ Static method
 userSchema.statics.findByEmail = function (email: string) {
-  return this.findOne({ email });
+  return this.findOne({ email }).select("+password");
 };
 
 // ✅ Pre-save hook
 userSchema.pre<UserDocument>("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.password) {
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
 
 // ✅ Instance methods
-userSchema.methods.generateAccessToken = async function (this: UserDocument) {
-  return jwt.sign(
-    { _id: this._id },
-    config.JWT.accessToken.secret!,
-    { expiresIn: config.JWT.accessToken.expiresIn }
-  );
+userSchema.methods.isPasswordCorrect = async function (
+  password: string
+): Promise<boolean> {
+  return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.generateRefreshToken = async function (this: UserDocument) {
-  return jwt.sign(
-    { _id: this._id },
-    config.JWT.refreshToken.secret!,
-    { expiresIn: config.JWT.refreshToken.expiresIn }
-  );
+userSchema.methods.generateAccessToken = async function (
+  this: UserDocument
+): Promise<string> {
+  return jwt.sign({ _id: this._id }, config.JWT.accessToken.secret!, {
+    expiresIn: config.JWT.accessToken.expiresIn,
+  });
 };
 
-export const UserModel = mongoose.model<User, UserModelType>(
+userSchema.methods.generateRefreshToken = async function (
+  this: UserDocument
+): Promise<string> {
+  return jwt.sign({ _id: this._id }, config.JWT.refreshToken.secret!, {
+    expiresIn: config.JWT.refreshToken.expiresIn,
+  });
+};
+
+export const UserModel = mongoose.model<IUser, UserModelType>(
   "User",
   userSchema
 );

@@ -1,0 +1,19 @@
+export const MESSAGES = {
+  USER: {
+    CREATED: "User created successfully.",
+    UPDATED: "User updated successfully.",
+    DELETED: "User deleted successfully.",
+    NOT_FOUND: "User not found.",
+    NOT_FOUND_AGAINST_EMAIL: "User not found against email",
+    EXISTS: "User already exists.",
+    INCORRECT_PASSWORD: "Incorrect Password",
+  },
+  AUTH: {
+    INVALID: "Invalid credentials.",
+    TOKEN_EXPIRED: "Access token expired. Please login again.",
+  },
+  COMMON: {
+    SERVER_ERROR: "Something went wrong. Please try again later.",
+    UNAUTHORIZED: "You are not authorized to perform this action.",
+  },
+} as const;
