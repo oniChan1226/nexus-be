@@ -13,9 +13,21 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "paths": {
+      "@types/*": ["@types/*"],
+      "config/*": ["config/*"],
+      "lib/*": ["lib/*"],
+      "middlewares/*": ["middlewares/*"],
+      "models/*": ["models/*"],
+      "modules/*": ["modules/*"],
+      "queues/*": ["queues/*"],
+      "routes/*": ["routes/*"],
+      "services/*": ["services/*"],
+      "specs/*": ["specs/*"],
+      "utils/*": ["utils/*"]
+    }
   },
-
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

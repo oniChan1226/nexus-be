@@ -1,5 +1,5 @@
 // src/server.ts
-import logger from "config/logger";
+import logger from "./config/logger";
 import app from "./app";
 import { connectDB } from "./config";
 import { config } from "./config/env";
