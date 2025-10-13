@@ -10,7 +10,13 @@ export class QueueService {
   static async registerQueue(name: QueueNames): Promise<Queue> {
     if (!this.queues.has(name)) {
       const connection = await getRedisConnection();
-      const queue = new Queue(name, { connection });
+      const queue = new Queue(name, {
+        connection,
+        defaultJobOptions: {
+          removeOnComplete: { age: 300, count: 100 }, // remove after 5min or keep max 100
+          removeOnFail: { age: 86400, count: 200 }, // 1 day or max 200
+        },
+      });
       this.queues.set(name, queue);
     }
     return this.queues.get(name)!;
@@ -30,7 +36,9 @@ export class QueueService {
     );
 
     worker.on("failed", (job, err) =>
-      console.error(`[Worker:${name}] ❌ Job failed: ${job?.id} - ${err.message}`)
+      console.error(
+        `[Worker:${name}] ❌ Job failed: ${job?.id} - ${err.message}`
+      )
     );
 
     console.log(`[Worker:${name}] started`);

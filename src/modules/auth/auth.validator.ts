@@ -18,12 +18,29 @@ const loginSchema = z.object({
   }),
 });
 
+const loginWithOtpSchema = z.object({
+  body: z.object({
+    email: z.email(),
+  }),
+});
+
+const verifyOtpSchema = z.object({
+  body: z.object({
+    email: z.email(),
+    otp: z.string().length(6),
+  }),
+});
+
 // === TYPES ===
 export type UserRegisterData = z.infer<typeof registerSchema>["body"];
 export type UserLoginData = z.infer<typeof loginSchema>["body"];
+export type UserLoginWithOtpData = z.infer<typeof loginWithOtpSchema>["body"];
+export type UserOtpData = z.infer<typeof verifyOtpSchema>["body"];
 
 // === GROUPED SCHEMAS ===
 export const AuthValidator = {
   registerSchema,
   loginSchema,
+  loginWithOtpSchema,
+  verifyOtpSchema,
 };

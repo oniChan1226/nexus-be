@@ -22,4 +22,20 @@ export const AuthController = {
       .cookie("refreshToken", tokens.refreshToken, { ...options })
       .json(response);
   }),
+
+  loginWithOtp: asyncHandler(async (req, res) => {
+    const response = await AuthService.loginWithOtp(req.body);
+
+    return res.status(response.status).json(response);
+  }),
+
+  verifyOtp: asyncHandler(async (req, res) => {
+    const { response, tokens } = await AuthService.verifyOtp(req.body);
+
+    return res
+      .status(response.status)
+      .cookie("accessToken", tokens.accessToken, { ...options })
+      .cookie("refreshToken", tokens.refreshToken, { ...options })
+      .json(response);
+  }),
 };

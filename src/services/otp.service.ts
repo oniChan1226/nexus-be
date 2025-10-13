@@ -3,6 +3,7 @@ import { deleteOtp, getOtp, saveOtp } from "lib/otpStore";
 import { getRedisConnection } from "queues/connection";
 import { QueueService } from "./queue.service";
 import logger from "config/logger";
+import { EmailService } from "./email.service";
 
 export const OtpService = {
   async generateOtp(identifier: string): Promise<string> {
@@ -36,6 +37,7 @@ export const OtpService = {
   },
 
   async processOtpJob(email: string, otp: string) {
+    await EmailService.sendMail(email, "Your OTP Code", `Your OTP is ${otp}`);
     logger.info(`[OtpService] Sending OTP ${otp} to ${email}`);
     return true;
   },

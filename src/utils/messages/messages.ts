@@ -14,6 +14,13 @@ export const MESSAGES = {
     INVALID: "Invalid credentials.",
     TOKEN_EXPIRED: "Access token expired. Please login again.",
   },
+  OTP: {
+    OTP_SENT: "Otp sent",
+    OTP_EXPIRED: "Otp expired",
+    OTP_INVALID: "Invalid Otp",
+    OTP_VERIFIED: "Otp verified successfully",
+  },
+  LOGGING: {},
   COMMON: {
     SERVER_ERROR: "Something went wrong. Please try again later.",
     UNAUTHORIZED: "You are not authorized to perform this action.",

@@ -18,4 +18,16 @@ router.post(
   AuthController.login
 );
 
+router.post(
+  "/login-with-otp",
+  validateResource(AuthValidator.loginWithOtpSchema),
+  AuthController.loginWithOtp
+);
+
+router.post(
+  "/verify-otp",
+  validateResource(AuthValidator.verifyOtpSchema),
+  AuthController.verifyOtp
+);
+
 export default router;
