@@ -40,7 +40,17 @@ export const AuthService = {
     };
   },
 
-  async loginWithOtp(){},
+  async loginWithOtp(data: UserLoginData) {
+    const user = await UserModel.findByEmail(data.email);
+    if (!user) {
+      throw new ApiError(404, t("USER.NOT_FOUND_AGAINST_EMAIL"));
+    }
+
+    const isValidPassword = await user.isPasswordCorrect(data.password);
+    if (!isValidPassword) {
+      throw new ApiError(400, t("USER.INCORRECT_PASSWORD"));
+    }
+  },
 
   async generateAccessAndRefreshToken(
     user: UserDocument

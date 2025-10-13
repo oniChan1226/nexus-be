@@ -7,7 +7,8 @@ export const redisOptions: RedisOptions = {
   username: config.REDIS.username,
   password: config.REDIS.password,
   db: Number(config.REDIS.db),
-  tls: config.REDIS.tls ? {} : undefined, // enable TLS if set (for cloud)
+  // tls: config.REDIS.tls ? {} : undefined, // enable TLS if set (for cloud)
+  // tls: {},
   maxRetriesPerRequest: null, // BullMQ recommended
   enableReadyCheck: true,
   reconnectOnError: (err) => {

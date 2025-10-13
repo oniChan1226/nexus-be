@@ -4,6 +4,7 @@ import app from "./app";
 import { connectDB } from "./config";
 import { config } from "./config/env";
 import { getRedisConnection, closeRedisConnection } from "./queues/connection";
+import { bootstrapQueues } from "queues";
 
 const startServer = async () => {
   try {
@@ -12,6 +13,8 @@ const startServer = async () => {
 
     // 2️⃣ Connect Redis (shared connection for all queues)
     await getRedisConnection();
+
+    await bootstrapQueues();
 
     // 3️⃣ Start HTTP server
     const server = app.listen(config.MAIN.port, () => {
