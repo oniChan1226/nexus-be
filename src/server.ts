@@ -1,13 +1,34 @@
-import app from "./app"
-import { connectDB } from "./config"
-import { config } from "./config/env"
+// src/server.ts
+import logger from "config/logger";
+import app from "./app";
+import { connectDB } from "./config";
+import { config } from "./config/env";
+import { getRedisConnection, closeRedisConnection } from "./queues/connection";
 
 const startServer = async () => {
-    await connectDB() // ✅ Wait until Mongo is ready
+  try {
+    // 1️⃣ Connect MongoDB
+    await connectDB();
 
-    app.listen(config.MAIN.port, () => {
-        console.log(`🚀 Server running at http://localhost:${config.MAIN.port}`)
-    })
-}
+    // 2️⃣ Connect Redis (shared connection for all queues)
+    await getRedisConnection();
 
-startServer()
+    // 3️⃣ Start HTTP server
+    const server = app.listen(config.MAIN.port, () => {
+      logger.info(`🚀 Server running at http://localhost:${config.MAIN.port}`);
+    });
+
+    // 4️⃣ Graceful shutdown
+    process.on("SIGINT", async () => {
+      logger.info("🛑 Gracefully shutting down...");
+      server.close();
+      await closeRedisConnection();
+      process.exit(0);
+    });
+  } catch (err) {
+    logger.error("❌ Startup failed:", err);
+    process.exit(1);
+  }
+};
+
+startServer();

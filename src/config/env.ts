@@ -27,4 +27,18 @@ export const config: AppConfig = {
         (process.env.REFRESH_TOKEN_EXPIRY as SignOptions["expiresIn"]) || "7d",
     },
   },
+  REDIS: {
+    host: process.env.REDIS_HOST || "127.0.0.1",
+    port: Number(process.env.REDIS_PORT) || 6379,
+    username: process.env.REDIS_USERNAME,
+    password: process.env.REDIS_PASSWORD,
+    db: Number(process.env.REDIS_DB) || 0,
+    tls: process.env.REDIS_TLS === "true",
+  },
+
+  BULLMQ: {
+    prefix: process.env.BULLMQ_PREFIX || "bullmq",
+    maxRetries: Number(process.env.BULLMQ_MAX_RETRIES) || 3,
+    backoffDelay: Number(process.env.BULLMQ_BACKOFF_DELAY) || 1000,
+  },
 };

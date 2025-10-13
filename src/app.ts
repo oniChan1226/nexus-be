@@ -8,6 +8,7 @@ import logger from "./config/logger";
 import { ErrorMiddleware } from "./middlewares/errorHandler";
 import { ApiResponse } from "./utils/ApiResponse";
 import { IUser } from "./@types/models/user.types";
+import {} from "./config/bullmq"
 
 declare global {
   namespace Express {

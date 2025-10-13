@@ -6,6 +6,21 @@ export interface JWTConfig {
   expiresIn: SignOptions["expiresIn"];
 }
 
+export interface RedisConfig {
+  host: string;
+  port: number;
+  username?: string;
+  password?: string;
+  db: number;
+  tls?: boolean;
+}
+
+export interface BullMQConfig {
+  prefix: string;
+  maxRetries: number;
+  backoffDelay: number;
+}
+
 export interface AppConfig {
   MAIN: {
     port: number;
@@ -20,4 +35,6 @@ export interface AppConfig {
     accessToken: JWTConfig;
     refreshToken: JWTConfig;
   };
+  REDIS: RedisConfig;
+  BULLMQ: BullMQConfig;
 }

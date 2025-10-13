@@ -9,6 +9,8 @@ export const MESSAGES = {
     INCORRECT_PASSWORD: "Incorrect Password",
   },
   AUTH: {
+    LOG_IN: "User logged in successfully",
+    LOG_OUT: "User logged out successfully",
     INVALID: "Invalid credentials.",
     TOKEN_EXPIRED: "Access token expired. Please login again.",
   },
