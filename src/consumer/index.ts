@@ -4,16 +4,18 @@ import { closeRedisConnection } from "queues/connection";
 
 (async () => {
   await startOtpWorker();
+  logger.info(`Worker running at process: ${process.pid}`);
 
-  process.on("SIGINT", async () => {
-    logger.info("🛑 Shutting down OTP worker...");
+  const gracefulShutdown = async (signal: string) => {
+    logger.info(`🛑 Received ${signal}, shutting down OTP worker...`);
     await closeRedisConnection();
     process.exit(0);
-  });
+  };
 
-  process.on("SIGTERM", async () => {
-    logger.info("🛑 Shutting down OTP worker...");
-    await closeRedisConnection();
-    process.exit(0);
+  process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+  process.once("SIGUSR2", async () => {
+    await gracefulShutdown("SIGUSR2");
+    process.kill(process.pid, "SIGUSR2"); // Let nodemon actually restart it
   });
 })();

@@ -1,6 +1,7 @@
 {
   "watch": ["src"],
   "ext": "ts,json",
-  "ignore": ["dist", "node_modules"],
-  "exec": "ts-node -r tsconfig-paths/register -r dotenv/config src/server.ts"
+  "ignore": ["dist", "node_modules", "src/consumer"],
+  "exec": "ts-node -r tsconfig-paths/register -r dotenv/config src/server.ts",
+  "signal": "SIGTERM"
 }
