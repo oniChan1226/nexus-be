@@ -4,9 +4,10 @@
   "description": "skill nexus backend",
   "main": "server.js",
   "scripts": {
-"build": "tsc && tsc-alias",
+    "build": "tsc && tsc-alias",
     "start": "node -r tsconfig-paths/register dist/server.js",
     "dev": "nodemon",
+    "dev:worker": "nodemon --config nodemon.worker.json",
     "prestart": "npm run build"
   },
   "keywords": [],

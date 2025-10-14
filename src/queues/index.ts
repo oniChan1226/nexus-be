@@ -1,8 +1,7 @@
-import { registerOtpQueue } from "./otp/otpQueue";
-import { startOtpWorker } from "./otp/otpWorker";
+import { registerOtpQueue } from "./otpQueue";
 
 export async function bootstrapQueues() {
-  await Promise.all([registerOtpQueue(), startOtpWorker()]);
+  await Promise.all([registerOtpQueue(),]);
 
-  console.log("[App] All queues and workers initialized");
+  console.log("[App] All queues initialized");
 }

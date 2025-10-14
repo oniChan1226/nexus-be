@@ -2,6 +2,7 @@
 import { Queue, Worker, Processor } from "bullmq";
 import { getRedisConnection } from "queues/connection";
 import type { QueueNames } from "../@types/queues/job.types";
+import logger from "config/logger";
 
 export class QueueService {
   private static queues = new Map<QueueNames, Queue>();
@@ -28,11 +29,12 @@ export class QueueService {
 
   /** Start a worker for given queue */
   static async createWorker(name: QueueNames, processor: Processor<any>) {
+    logger.info(`[QueueService:CreateWorker}] ✅ Worker creation triggered`);
     const connection = await getRedisConnection();
     const worker = new Worker(name, processor, { connection });
 
     worker.on("completed", (job) =>
-      console.log(`[Worker:${name}] ✅ Job completed: ${job.id}`)
+      logger.info(`[Worker:${name}] ✅ Job completed: ${job.id}`)
     );
 
     worker.on("failed", (job, err) =>
@@ -41,6 +43,6 @@ export class QueueService {
       )
     );
 
-    console.log(`[Worker:${name}] started`);
+    logger.info(`[Worker:${name}] started`);
   }
 }

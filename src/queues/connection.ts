@@ -14,7 +14,9 @@ export async function getRedisConnection(): Promise<Redis> {
     redisInstance = new Redis(redisOptions);
 
     redisInstance.on("connect", () => {
-      logger.info(`[Redis] Connected to ${redisOptions.host}:${redisOptions.port}`);
+      logger.info(
+        `[Redis] Connected to ${redisOptions.host}:${redisOptions.port}`
+      );
     });
 
     redisInstance.on("error", (err) => {
@@ -26,10 +28,15 @@ export async function getRedisConnection(): Promise<Redis> {
     });
 
     // Wait until Redis is ready
-    await new Promise<void>((resolve, reject) => {
-      redisInstance!.once("ready", resolve);
-      redisInstance!.once("error", reject);
-    });
+    await Promise.race([
+      new Promise<void>((resolve, reject) => {
+        redisInstance!.once("ready", resolve);
+        redisInstance!.once("error", reject);
+      }),
+      new Promise<void>((_, reject) =>
+        setTimeout(() => reject(new Error("Redis connection timeout")), 5000)
+      ),
+    ]);
   }
 
   return redisInstance;
