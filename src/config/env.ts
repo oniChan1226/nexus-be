@@ -41,4 +41,18 @@ export const config: AppConfig = {
     maxRetries: Number(process.env.BULLMQ_MAX_RETRIES) || 3,
     backoffDelay: Number(process.env.BULLMQ_BACKOFF_DELAY) || 1000,
   },
+  LINKEDIN: {
+    client_id: process.env.CLIENT_ID || "",
+    client_secret: process.env.CLIENT_SECRET || "",
+    scope:
+    "profile openid email w_member_social",
+    // "r_liteprofile w_member_social rw_organization_admin r_organization_social w_organization_social",
+    redirect_uri:
+      process.env.LINKEDIN_REDIRECT_URI ||
+      "http://localhost:8080/api/auth/linkedin/callback",
+    auth_url: "https://www.linkedin.com/oauth/v2/authorization",
+    token_url: "https://www.linkedin.com/oauth/v2/accessToken",
+    ugc_posts_url: "https://api.linkedin.com/v2/ugcPosts",
+    organization_urn: process.env.LINKEDIN_ORG_URN || "", // e.g. "urn:li:organization:123456"
+  },
 };

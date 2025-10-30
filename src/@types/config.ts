@@ -21,6 +21,19 @@ export interface BullMQConfig {
   backoffDelay: number;
 }
 
+export interface LinkedInConfig {
+  client_id: string;
+  client_secret: string;
+  scope: string;  
+  api_version?: string; // optional, e.g. "v2"
+  base_url?: string; // optional, e.g. "https://api.linkedin.com"
+  auth_url?: string; // optional, e.g. "https://www.linkedin.com/oauth/v2/authorization"
+  token_url: string; // optional, e.g. "https://www.linkedin.com/oauth/v2/accessToken"
+  organization_urn?: string; // if posting as a company, e.g. "urn:li:organization:123456"
+  ugc_posts_url?: string; // if posting as a company, e.g. "urn:li:organization:123456"
+  redirect_uri: string; // if posting as a company, e.g. "urn:li:organization:123456"
+};
+
 export interface AppConfig {
   MAIN: {
     port: number;
@@ -37,4 +50,5 @@ export interface AppConfig {
   };
   REDIS: RedisConfig;
   BULLMQ: BullMQConfig;
+  LINKEDIN: LinkedInConfig;
 }

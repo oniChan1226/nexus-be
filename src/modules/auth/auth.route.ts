@@ -30,4 +30,8 @@ router.post(
   AuthController.verifyOtp
 );
 
+// OAuth 2.0
+router.get("/linkedin", AuthController.linkedInAuth);
+router.get("/linkedin/callback", AuthController.linkedInAuthCallback);
+
 export default router;

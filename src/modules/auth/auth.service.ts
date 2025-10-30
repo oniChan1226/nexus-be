@@ -1,5 +1,6 @@
 import { UserModel } from "models";
 import type {
+  LinkedInAuthCallbackQuery,
   UserLoginData,
   UserLoginWithOtpData,
   UserOtpData,
@@ -9,6 +10,8 @@ import { ApiError, ApiResponse } from "utils";
 import { IUser, UserDocument } from "../../@types/models/user.types";
 import { t } from "utils";
 import { OtpService } from "services/otp.service";
+import axios from "axios";
+import { config } from "config/env";
 
 export const AuthService = {
   async register(data: UserRegisterData) {
@@ -80,6 +83,37 @@ export const AuthService = {
       response: new ApiResponse<IUser>(200, t("OTP.OTP_VERIFIED"), user),
       tokens,
     };
+  },
+
+  async linkedInAuthCallback(query: LinkedInAuthCallbackQuery) {
+    const { code } = query;
+
+    // Exchange code for access token
+    const tokenResponse = await axios.post(
+      config.LINKEDIN.token_url,
+      new URLSearchParams({
+        grant_type: "authorization_code",
+        code: code as string,
+        redirect_uri: config.LINKEDIN.redirect_uri,
+        client_id: config.LINKEDIN.client_id,
+        client_secret: config.LINKEDIN.client_secret,
+      }).toString(),
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      }
+    );
+
+    const accessToken = tokenResponse.data.access_token;
+
+    const profileResponse = await axios.get("https://api.linkedin.com/v2/me", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    const profile = profileResponse.data;
+    console.log("LinkedIn Access Token:", accessToken);
+    console.log("LinkedIn Profile:", profile);
+
+    return new ApiResponse(200, t("AUTH.LOG_IN"));
   },
 
   async generateAccessAndRefreshToken(

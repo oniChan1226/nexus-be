@@ -10,13 +10,34 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true });
 }
 
+// Helper to safely stringify circular structures
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key: string, value: any) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) return "[Circular]";
+      seen.add(value);
+    }
+    return value;
+  };
+};
+
+const safeStringify = (data: any) => {
+  try {
+    return JSON.stringify(data, getCircularReplacer(), 2);
+  } catch {
+    return String(data);
+  }
+};
+
 // === Custom formatting ===
 const consoleFormat = winston.format.combine(
   winston.format.colorize({ all: true }),
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
   winston.format.printf(({ timestamp, level, message, stack, ...meta }) => {
-    const metaString = Object.keys(meta).length ? JSON.stringify(meta, null, 2) : "";
     const msg = stack || message;
+    const metaString =
+      Object.keys(meta).length > 0 ? safeStringify(meta) : "";
     return `\n${timestamp} [${level}] ${msg}\n${metaString}`;
   })
 );
@@ -24,8 +45,9 @@ const consoleFormat = winston.format.combine(
 const fileFormat = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
   winston.format.printf(({ timestamp, level, message, stack, ...meta }) => {
-    const metaString = Object.keys(meta).length ? JSON.stringify(meta, null, 2) : "";
     const msg = stack || message;
+    const metaString =
+      Object.keys(meta).length > 0 ? safeStringify(meta) : "";
     return `${timestamp} [${level.toUpperCase()}]: ${msg}\n${metaString}\n`;
   })
 );

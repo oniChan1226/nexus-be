@@ -31,11 +31,20 @@ const verifyOtpSchema = z.object({
   }),
 });
 
+const linkedInAuthCallbackSchema = z.object({
+  query: z.object({
+    code: z.string(),
+  }),
+});
+
 // === TYPES ===
 export type UserRegisterData = z.infer<typeof registerSchema>["body"];
 export type UserLoginData = z.infer<typeof loginSchema>["body"];
 export type UserLoginWithOtpData = z.infer<typeof loginWithOtpSchema>["body"];
 export type UserOtpData = z.infer<typeof verifyOtpSchema>["body"];
+export type LinkedInAuthCallbackQuery = z.infer<
+  typeof linkedInAuthCallbackSchema
+>["query"];
 
 // === GROUPED SCHEMAS ===
 export const AuthValidator = {
@@ -43,4 +52,5 @@ export const AuthValidator = {
   loginSchema,
   loginWithOtpSchema,
   verifyOtpSchema,
+  linkedInAuthCallbackSchema,
 };
