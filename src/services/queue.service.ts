@@ -31,7 +31,7 @@ export class QueueService {
   static async createWorker(name: QueueNames, processor: Processor<any>) {
     logger.info(`[QueueService:CreateWorker}] ✅ Worker creation triggered`);
     const connection = await getRedisConnection();
-    const worker = new Worker(name, processor, { connection });
+    const worker = new Worker(name, processor, { connection, concurrency: 3 });
 
     worker.on("completed", (job) =>
       logger.info(`[Worker:${name}] ✅ Job completed: ${job.id}`)
