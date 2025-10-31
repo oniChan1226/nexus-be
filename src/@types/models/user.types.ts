@@ -10,6 +10,10 @@ export interface IUser extends BaseDocument {
   profileImage?: string;
   // Role
   role: Ref<IRole>[];
+  permissions?: {
+    action: string;
+    subject: string;
+  }[];
   // security
   refreshToken?: string;
   isVerified?: boolean;

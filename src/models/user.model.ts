@@ -40,6 +40,18 @@ const userSchema = new mongoose.Schema<IUser>(
         ref: "Role",
       },
     ],
+    permissions: [
+      {
+        action: {
+          type: String,
+          required: true,
+        },
+        subject: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     // Security
     refreshToken: {
       type: String,

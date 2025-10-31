@@ -1,3 +1,6 @@
 export * from "./user.model"
 export * from "./role.model"
 export * from "./permissions.model"
+export * from "./verification-token.model"
+export * from "./location.model"
+export * from "./route.model"
