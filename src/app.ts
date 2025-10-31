@@ -79,6 +79,31 @@ app.get("/health", (req: Request, res: Response) => {
   });
 });
 
+// Socket.IO status endpoint
+app.get("/socket-status", (req: Request, res: Response) => {
+  try {
+    // Import socketManager dynamically to avoid circular dependency
+    const { socketManager } = require("./socket");
+    const stats = socketManager.getStats();
+    
+    res.status(200).json({
+      statusCode: 200,
+      status: "OK",
+      message: "Socket.IO server status",
+      data: stats,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(503).json({
+      statusCode: 503,
+      status: "ERROR",
+      message: "Socket.IO server not available",
+      error: error instanceof Error ? error.message : "Unknown error",
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // API routes
 app.use(config.API.prefix, routes);
 

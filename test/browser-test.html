@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .connected { background-color: #d4edda; color: #155724; }
+        .disconnected { background-color: #f8d7da; color: #721c24; }
+        .messages { height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
+        input, button { margin: 5px 0; padding: 8px; }
+        button { background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 Socket.IO Test Client</h1>
+        
+        <div id="status" class="status disconnected">Disconnected</div>
+        
+        <div>
+            <button onclick="connect()">Connect</button>
+            <button onclick="disconnect()">Disconnect</button>
+        </div>
+        
+        <div>
+            <h3>🏠 Room Management</h3>
+            <input type="text" id="roomId" placeholder="Room ID" value="test-room">
+            <button onclick="joinRoom()">Join Room</button>
+            <button onclick="leaveRoom()">Leave Room</button>
+        </div>
+        
+        <div>
+            <h3>💬 Send Message</h3>
+            <input type="text" id="messageInput" placeholder="Type your message">
+            <button onclick="sendMessage()">Send to Room</button>
+        </div>
+        
+        <div>
+            <h3>📱 User Status</h3>
+            <select id="statusSelect">
+                <option value="online">Online</option>
+                <option value="away">Away</option>
+                <option value="busy">Busy</option>
+                <option value="offline">Offline</option>
+            </select>
+            <button onclick="updateStatus()">Update Status</button>
+        </div>
+        
+        <div>
+            <h3>📋 Messages</h3>
+            <div id="messages" class="messages"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        let socket = null;
+        const statusEl = document.getElementById('status');
+        const messagesEl = document.getElementById('messages');
+
+        function addMessage(message) {
+            const div = document.createElement('div');
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            messagesEl.appendChild(div);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        function connect() {
+            socket = io('http://localhost:8080');
+            
+            socket.on('connect', () => {
+                statusEl.className = 'status connected';
+                statusEl.textContent = `Connected (ID: ${socket.id})`;
+                addMessage('✅ Connected to server');
+            });
+            
+            socket.on('disconnect', () => {
+                statusEl.className = 'status disconnected';
+                statusEl.textContent = 'Disconnected';
+                addMessage('❌ Disconnected from server');
+            });
+            
+            socket.on('message_received', (data) => {
+                addMessage(`💬 Message: ${data.message} (from: ${data.from})`);
+            });
+            
+            socket.on('room_joined', (data) => {
+                addMessage(`🏠 Joined room: ${data.roomId}`);
+            });
+            
+            socket.on('room_left', (data) => {
+                addMessage(`🚪 Left room: ${data.roomId}`);
+            });
+            
+            socket.on('user_status_updated', (data) => {
+                addMessage(`👤 Status updated: ${data.status}`);
+            });
+            
+            socket.on('notification', (data) => {
+                addMessage(`🔔 Notification: ${data.title} - ${data.message}`);
+            });
+            
+            socket.on('error', (error) => {
+                addMessage(`❌ Error: ${error.message}`);
+            });
+        }
+
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
+        }
+
+        function joinRoom() {
+            if (socket) {
+                const roomId = document.getElementById('roomId').value;
+                socket.emit('join_room', { roomId });
+            }
+        }
+
+        function leaveRoom() {
+            if (socket) {
+                const roomId = document.getElementById('roomId').value;
+                socket.emit('leave_room', { roomId });
+            }
+        }
+
+        function sendMessage() {
+            if (socket) {
+                const message = document.getElementById('messageInput').value;
+                const roomId = document.getElementById('roomId').value;
+                socket.emit('send_message', { roomId, message });
+                document.getElementById('messageInput').value = '';
+            }
+        }
+
+        function updateStatus() {
+            if (socket) {
+                const status = document.getElementById('statusSelect').value;
+                socket.emit('update_status', { status });
+            }
+        }
+    </script>
+</body>
+</html>

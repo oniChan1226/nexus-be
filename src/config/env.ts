@@ -55,4 +55,25 @@ export const config: AppConfig = {
     ugc_posts_url: "https://api.linkedin.com/v2/ugcPosts",
     organization_urn: process.env.LINKEDIN_ORG_URN || "", // e.g. "urn:li:organization:123456"
   },
+
+  SOCKETIO: {
+    port: Number(process.env.SOCKETIO_PORT),
+    cors: {
+      origin: process.env.SOCKETIO_CORS_ORIGIN?.split(",") || ["http://localhost:3000", "http://localhost:8080"],
+      credentials: process.env.SOCKETIO_CORS_CREDENTIALS === "true",
+    },
+    redis: {
+      enabled: process.env.SOCKETIO_REDIS_ENABLED === "true",
+      keyPrefix: process.env.SOCKETIO_REDIS_PREFIX || "socket.io",
+    },
+    rateLimit: {
+      windowMs: Number(process.env.SOCKETIO_RATE_LIMIT_WINDOW_MS) || 60000, // 1 minute
+      maxRequests: Number(process.env.SOCKETIO_RATE_LIMIT_MAX_REQUESTS) || 100,
+    },
+    connection: {
+      pingTimeout: Number(process.env.SOCKETIO_PING_TIMEOUT) || 60000,
+      pingInterval: Number(process.env.SOCKETIO_PING_INTERVAL) || 25000,
+      maxPayload: Number(process.env.SOCKETIO_MAX_PAYLOAD) || 1000000, // 1MB
+    },
+  },
 };
