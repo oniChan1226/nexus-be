@@ -20,7 +20,20 @@ declare global {
 const app: Application = express();
 
 // Middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", 
+      "http://127.0.0.1:5173",
+      "http://localhost:5174", 
+      "http://127.0.0.1:5174"
+    ], // Your React/Vite app
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    credentials: true, // Important for cookies
+    optionsSuccessStatus: 200,
+  })
+);
 app.use(
   express.json({
     limit: "1MB",

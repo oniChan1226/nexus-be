@@ -34,4 +34,44 @@ router.post(
 router.get("/linkedin", AuthController.linkedInAuth);
 router.get("/linkedin/callback", AuthController.linkedInAuthCallback);
 
+// Email Verification
+router.get(
+  "/verify-email",
+  validateResource(AuthValidator.verifyEmailSchema),
+  AuthController.verifyEmail
+);
+
+router.post(
+  "/resend-verification",
+  validateResource(AuthValidator.resendVerificationSchema),
+  AuthController.resendVerification
+);
+
+// Password Reset
+router.post(
+  "/forgot-password",
+  validateResource(AuthValidator.forgotPasswordSchema),
+  AuthController.forgotPassword
+);
+
+router.post(
+  "/reset-password",
+  validateResource(AuthValidator.resetPasswordSchema),
+  AuthController.resetPassword
+);
+
+// Logout (requires auth)
+router.post("/logout", verifyJWT, AuthController.logout);
+router.post("/logout-all", verifyJWT, AuthController.logoutAll);
+
+// Refresh Token
+router.post(
+  "/refresh-token",
+  validateResource(AuthValidator.refreshTokenSchema),
+  AuthController.refreshToken
+);
+
+// Get Current User (requires auth)
+router.get("/me", verifyJWT, AuthController.getCurrentUser);
+
 export default router;
