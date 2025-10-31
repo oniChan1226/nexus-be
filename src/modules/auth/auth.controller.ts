@@ -54,11 +54,12 @@ export const AuthController = {
   }),
 
   linkedInAuthCallback: asyncHandler(async (req, res) => {
-    const response = await AuthService.linkedInAuthCallback(
-      req.query as LinkedInAuthCallbackQuery
-    );
+    // const response = await AuthService.linkedInAuthCallback(
+    //   req.query as LinkedInAuthCallbackQuery
+    // );
 
-    return res.status(response.status).json(response);
+    return res.status(200).json()
+    // return res.status(response.status).json(response);
   }),
 
   // Email Verification

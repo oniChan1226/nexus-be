@@ -16,6 +16,12 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       required: [true, "Name is required"],
     },
+    firstName: {
+      type: String,
+    },
+    lastName: {
+      type: String,
+    },
     email: {
       type: String,
       unique: true,
@@ -31,6 +37,9 @@ const userSchema = new mongoose.Schema<IUser>(
       type: Number,
     },
     profileImage: {
+      type: String,
+    },
+    avatar: {
       type: String,
     },
     // Access

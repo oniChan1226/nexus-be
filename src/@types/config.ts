@@ -55,6 +55,30 @@ export interface SocketIOConfig {
   };
 }
 
+export interface AIConfig {
+  provider: "openai" | "anthropic" | "gemini" | "ollama";
+  openai: {
+    apiKey: string;
+    baseUrl: string;
+    defaultModel: string;
+  };
+  anthropic: {
+    apiKey: string;
+    baseUrl: string;
+    defaultModel: string;
+  };
+  gemini: {
+    apiKey: string;
+    defaultModel: string;
+  };
+  ollama: {
+    baseUrl: string;
+    defaultModel: string;
+  };
+  defaultTemperature: number;
+  defaultMaxTokens: number;
+}
+
 export interface AppConfig {
   MAIN: {
     port: number;
@@ -73,4 +97,5 @@ export interface AppConfig {
   BULLMQ: BullMQConfig;
   LINKEDIN: LinkedInConfig;
   SOCKETIO: SocketIOConfig;
+  AI: AIConfig;
 }

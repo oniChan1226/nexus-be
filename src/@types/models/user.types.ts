@@ -4,10 +4,13 @@ import { IRole } from "./role.type";
 
 export interface IUser extends BaseDocument {
   name: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   password?: string;
   age?: number;
   profileImage?: string;
+  avatar?: string;
   // Role
   role: Ref<IRole>[];
   permissions?: {

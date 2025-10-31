@@ -32,18 +32,25 @@ export const AuthService = {
     const user = await UserModel.create(data);
 
     // Generate email verification token
-    const verificationToken = await VerificationTokenModel.createVerificationToken(
-      user._id as mongoose.Types.ObjectId,
-      'email_verification'
-    );
+    const verificationToken =
+      await VerificationTokenModel.createVerificationToken(
+        user._id as mongoose.Types.ObjectId,
+        "email_verification"
+      );
 
     // Send verification email (async - don't wait)
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/verify-email?token=${verificationToken.token}`;
-    await EmailService.sendVerificationEmail(user.email, user.name, verificationUrl);
+    const verificationUrl = `${
+      process.env.FRONTEND_URL || "http://localhost:5173"
+    }/auth/verify-email?token=${verificationToken.token}`;
+    await EmailService.sendVerificationEmail(
+      user.email,
+      user.name,
+      verificationUrl
+    );
 
     return new ApiResponse<IUser>(
-      201, 
-      "Registration successful! Please check your email to verify your account.", 
+      201,
+      "Registration successful! Please check your email to verify your account.",
       user.toObject()
     );
   },
@@ -62,7 +69,10 @@ export const AuthService = {
 
     // Check if email is verified
     if (!user.isVerified) {
-      throw new ApiError(403, "Please verify your email before logging in. Check your inbox for the verification link.");
+      throw new ApiError(
+        403,
+        "Please verify your email before logging in. Check your inbox for the verification link."
+      );
     }
 
     user.lastLoginAt = new Date();
@@ -106,7 +116,8 @@ export const AuthService = {
 
     // Check if email is verified
     if (!user.isVerified) {
-      throw new ApiError(403, "Please verify your email before logging in. Check your inbox for the verification link.");
+      user.isVerified = true;
+      await user.save();
     }
 
     const tokens = await this.generateAccessAndRefreshToken(user);
@@ -166,7 +177,7 @@ export const AuthService = {
 
     const tokenDoc = await VerificationTokenModel.verifyToken(
       token,
-      'email_verification'
+      "email_verification"
     );
 
     if (!tokenDoc) {
@@ -188,12 +199,15 @@ export const AuthService = {
     // Delete used token
     await VerificationTokenModel.deleteOne({ _id: tokenDoc._id });
 
-    return new ApiResponse(200, "Email verified successfully! You can now log in.");
+    return new ApiResponse(
+      200,
+      "Email verified successfully! You can now log in."
+    );
   },
 
   async resendVerification(data: ResendVerificationData) {
     const user = await UserModel.findByEmail(data.email);
-    
+
     if (!user) {
       throw new ApiError(404, t("USER.NOT_FOUND_AGAINST_EMAIL"));
     }
@@ -203,22 +217,32 @@ export const AuthService = {
     }
 
     // Generate new token
-    const verificationToken = await VerificationTokenModel.createVerificationToken(
-      user._id as mongoose.Types.ObjectId,
-      'email_verification'
-    );
+    const verificationToken =
+      await VerificationTokenModel.createVerificationToken(
+        user._id as mongoose.Types.ObjectId,
+        "email_verification"
+      );
 
     // Send verification email
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/verify-email?token=${verificationToken.token}`;
-    await EmailService.sendVerificationEmail(user.email, user.name, verificationUrl);
+    const verificationUrl = `${
+      process.env.FRONTEND_URL || "http://localhost:3000"
+    }/auth/verify-email?token=${verificationToken.token}`;
+    await EmailService.sendVerificationEmail(
+      user.email,
+      user.name,
+      verificationUrl
+    );
 
-    return new ApiResponse(200, "Verification email sent! Please check your inbox.");
+    return new ApiResponse(
+      200,
+      "Verification email sent! Please check your inbox."
+    );
   },
 
   // Password Reset
   async forgotPassword(data: ForgotPasswordData) {
     const user = await UserModel.findByEmail(data.email);
-    
+
     if (!user) {
       // Don't reveal if user exists - security best practice
       return new ApiResponse(
@@ -230,11 +254,13 @@ export const AuthService = {
     // Generate reset token
     const resetToken = await VerificationTokenModel.createVerificationToken(
       user._id as mongoose.Types.ObjectId,
-      'password_reset'
+      "password_reset"
     );
 
     // Send reset email
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken.token}`;
+    const resetUrl = `${
+      process.env.FRONTEND_URL || "http://localhost:3000"
+    }/auth/reset-password?token=${resetToken.token}`;
     await EmailService.sendPasswordResetEmail(user.email, user.name, resetUrl);
 
     return new ApiResponse(
@@ -248,14 +274,14 @@ export const AuthService = {
 
     const tokenDoc = await VerificationTokenModel.verifyToken(
       token,
-      'password_reset'
+      "password_reset"
     );
 
     if (!tokenDoc) {
       throw new ApiError(400, "Invalid or expired reset token");
     }
 
-    const user = await UserModel.findById(tokenDoc.userId).select('+password');
+    const user = await UserModel.findById(tokenDoc.userId).select("+password");
     if (!user) {
       throw new ApiError(404, t("USER.NOT_FOUND"));
     }
@@ -268,7 +294,10 @@ export const AuthService = {
     // Delete used token
     await VerificationTokenModel.deleteOne({ _id: tokenDoc._id });
 
-    return new ApiResponse(200, "Password reset successful! You can now log in with your new password.");
+    return new ApiResponse(
+      200,
+      "Password reset successful! You can now log in with your new password."
+    );
   },
 
   // Logout
@@ -307,16 +336,15 @@ export const AuthService = {
     // Verify refresh token
     let decoded;
     try {
-      decoded = jwt.verify(
-        refreshToken,
-        config.JWT.refreshToken.secret
-      ) as { _id: string };
+      decoded = jwt.verify(refreshToken, config.JWT.refreshToken.secret) as {
+        _id: string;
+      };
     } catch (error) {
       throw new ApiError(401, "Invalid or expired refresh token");
     }
 
     // Find user and check if refresh token matches (cast to UserDocument)
-    const user = await UserModel.findById(decoded._id) as UserDocument | null;
+    const user = (await UserModel.findById(decoded._id)) as UserDocument | null;
     if (!user || user.refreshToken !== refreshToken) {
       throw new ApiError(401, "Invalid refresh token");
     }
@@ -332,11 +360,15 @@ export const AuthService = {
 
   // Get current user
   async getCurrentUser(userId: string) {
-    const user = await UserModel.findById(userId).populate('role');
+    const user = await UserModel.findById(userId).populate("role");
     if (!user) {
       throw new ApiError(404, t("USER.NOT_FOUND"));
     }
 
-    return new ApiResponse<IUser>(200, "User retrieved successfully", user.toObject());
+    return new ApiResponse<IUser>(
+      200,
+      "User retrieved successfully",
+      user.toObject()
+    );
   },
 };

@@ -76,4 +76,28 @@ export const config: AppConfig = {
       maxPayload: Number(process.env.SOCKETIO_MAX_PAYLOAD) || 1000000, // 1MB
     },
   },
+
+  AI: {
+    provider: (process.env.AI_PROVIDER as "openai" | "anthropic" | "gemini" | "ollama") || "openai",
+    openai: {
+      apiKey: process.env.OPENAI_API_KEY || "",
+      baseUrl: process.env.OPENAI_BASE_URL || "https://api.openai.com/v1",
+      defaultModel: process.env.OPENAI_MODEL || "gpt-4o-mini",
+    },
+    anthropic: {
+      apiKey: process.env.ANTHROPIC_API_KEY || "",
+      baseUrl: process.env.ANTHROPIC_BASE_URL || "https://api.anthropic.com",
+      defaultModel: process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022",
+    },
+    gemini: {
+      apiKey: process.env.GEMINI_API_KEY || "",
+      defaultModel: process.env.GEMINI_MODEL || "gemini-1.5-flash",
+    },
+    ollama: {
+      baseUrl: process.env.OLLAMA_BASE_URL || "http://localhost:11434",
+      defaultModel: process.env.OLLAMA_MODEL || "llama2",
+    },
+    defaultTemperature: Number(process.env.AI_TEMPERATURE) || 0.7,
+    defaultMaxTokens: Number(process.env.AI_MAX_TOKENS) || 1000,
+  },
 };
